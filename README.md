@@ -1,97 +1,53 @@
-# pdf-download
-
-To resolve the issue of downloading PDFs using C# Selenium in headless mode without encountering the "Save As" popup, follow these steps based on the latest practices and search results:
+Below is a streamlined itinerary focusing solely on exploring the attractions along your route, with an emphasis on famous sites and nearby points of interest.
 
 ---
 
-### **Root Cause Analysis**
-The "Save As" popup in headless Chrome typically appears because the browser lacks a default download path configuration or due to missing Chrome DevTools Protocol (CDP) settings. This problem often arises when ChromeDriver or Chrome versions are outdated, or the CDP command for downloads is not properly configured.
+### **Day 1: Bangalore → Udupi & Surroundings**  
+- **Drive from Bangalore to Udupi** (approx. 8 hours)  
+- **In Udupi:**  
+  - **Sri Krishna Temple:** Visit this historic temple that defines the region’s spiritual heritage.  
+  - **Malpe Beach:** Stroll along this scenic beach and, if time permits, catch a boat to **St. Mary’s Island** to see its unique basalt rock formations.  
+  - **Kaup Lighthouse:** A short drive from Udupi, this spot offers panoramic views of the coastline.
 
 ---
 
-### **Solution: Configure Headless Chrome for Direct PDF Downloads**
-#### **1. Update ChromeDriver and Chrome**
-Ensure you are using **ChromeDriver v77.0.3865.40 or newer** and **Chrome v96+**, as older versions lack proper headless download support.
-
-#### **2. Configure ChromeOptions in C#**
-Set up headless mode, disable automation flags, and define a default download directory:
-```csharp
-using OpenQA.Selenium.Chrome;
-
-var options = new ChromeOptions();
-options.AddArgument("--headless=new"); // Use unified headless mode
-options.AddArgument("--window-size=1920,1080");
-options.AddArgument("--disable-extensions");
-options.AddArgument("--disable-popup-blocking");
-options.AddArgument("--disable-gpu");
-options.AddUserProfilePreference("download.default_directory", "C:\\Downloads"); // Set download path
-options.AddUserProfilePreference("download.prompt_for_download", false); // Disable prompt
-options.AddExcludedArgument("enable-automation"); // Bypass detection
-var driver = new ChromeDriver(options);
-```
-
-#### **3. Use Chrome DevTools to Set Download Behavior**
-Execute the CDP command `Page.setDownloadBehavior` to override default settings:
-```csharp
-var devTools = driver.GetDevTools();
-await devTools.CreateSession();
-var parameters = new Dictionary<string, object>
-{
-    { "behavior", "allow" },
-    { "downloadPath", "C:\\Downloads" }
-};
-await devTools.SendCommand("Page.setDownloadBehavior", parameters);
-```
-This command explicitly allows downloads and defines the save directory.
-
-#### **4. Trigger the Download**
-Click the download button and wait for the file to save:
-```csharp
-driver.Navigate().GoToUrl("https://example.com/pdf-download");
-var downloadButton = driver.FindElement(By.Id("download-button"));
-downloadButton.Click();
-
-// Wait for the file to download (adjust timeout as needed)
-var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
-wait.Until(d => new DirectoryInfo("C:\\Downloads").GetFiles("*.pdf").Length > 0);
-```
+### **Day 2: Udupi → Murudeshwar → Honnavar**  
+- **Depart from Udupi in the morning** and head to Murudeshwar (approx. 3 hours).  
+- **In Murudeshwar:**  
+  - **Murudeshwar Temple & Shiva Statue:** Explore one of the world’s tallest Shiva statues and its surrounding temple complex.  
+  - **Murudeshwar Beach:** Enjoy the dramatic coastal scenery and rock formations.  
+- **Continue to Honnavar** (approx. 2 additional hours):  
+  - **Apsarakonda Waterfalls:** Check out this picturesque waterfall that blends lush greenery with the rugged coast.  
+  - Explore any nearby coastal spots that highlight Honnavar’s natural beauty.
 
 ---
 
-### **Alternative Approaches**
-#### **1. Use Non-Headless Mode with Hidden UI**
-If headless mode still fails, run Chrome in the background without visible UI:
-```csharp
-options.AddArgument("--start-maximized");
-options.AddArgument("--window-position=-32000,-32000");
-```
-
-#### **2. Direct PDF URL Fetch**
-Extract the PDF URL via Selenium and download it using `HttpClient`:
-```csharp
-var pdfUrl = driver.FindElement(By.Id("pdf-link")).GetAttribute("href");
-using (var httpClient = new HttpClient())
-{
-    var pdfBytes = await httpClient.GetByteArrayAsync(pdfUrl);
-    File.WriteAllBytes("C:\\Downloads\\file.pdf", pdfBytes);
-}
-```
-
-#### **3. Browser Profile Configuration**
-Use a preconfigured Chrome profile with download settings:
-```csharp
-options.AddArgument("--user-data-dir=C:\\ChromeProfile");
-```
+### **Day 3: Honnavar → Yana Caves & Nearby Natural Wonders**  
+- **Head out from Honnavar** to reach the Yana area (approx. 1.5–2 hours).  
+- **At Yana Caves:**  
+  - Trek to view the stunning black limestone formations—often referred to as twin caves (Bhoolok and Bhairav).  
+  - Optionally, extend your exploration with a visit to **Vibhuti Falls**, a nearby natural attraction that enhances the adventure.
 
 ---
 
-### **Common Pitfalls & Fixes**
-- **Outdated ChromeDriver**: Update to the latest version from [ChromeDriver Downloads](https://chromedriver.chromium.org/).
-- **Permission Issues**: Ensure the download directory is writable.
-- **Incorrect CDP Command Syntax**: Verify the `Page.setDownloadBehavior` parameters.
-- **Ad-Blocking Extensions**: Disable them using `options.AddArgument("--disable-extensions")`.
+### **Day 4: Yana Caves → Gokarna**  
+- **Travel from Yana to Gokarna** (approx. 2–3 hours).  
+- **In Gokarna:**  
+  - **Mahabaleshwar Temple:** Visit this ancient temple that anchors Gokarna’s spiritual vibe.  
+  - **Om Beach:** Explore the beach whose natural shape mimics the sacred symbol.  
+  - **Kudle Beach, Half Moon Beach, & Paradise Beach:** These beaches offer varied experiences—from relaxed coastal walks to more adventurous, scenic trails.  
+  - Consider a short coastal trek between the beaches to fully appreciate Gokarna’s rugged shoreline and local culture.
 
 ---
 
-### **Conclusion**
-The primary solution involves configuring ChromeOptions and using the `Page.setDownloadBehavior` CDP command. If issues persist, consider alternative methods like direct HTTP downloads. For further debugging, enable Chrome logs with `options.SetLoggingPreference(LogType.Driver, LogLevel.All)`.
+### **Additional Nearby Attractions:**  
+- **Manipal:** Located near Udupi, this town is known for its cultural and academic vibe, with museums and art installations worth a quick stop.  
+- **Local Villages & Coastal Trails:** Along the route, you might encounter charming villages and lesser-known coastal trails that provide a glimpse into regional life.
+
+---
+
+### **Travel Considerations:**  
+- **Road & Weather:** Check current road conditions and weather forecasts to adjust your timings and routes as needed.  
+- **Local Guidance:** Confirm access and any required permits (especially for trekking near Yana Caves) and boat trips (for St. Mary’s Island).
+
+This plan emphasizes exploration of famous landmarks and natural wonders along the route without the details of meals or accommodations. Enjoy your journey along the vibrant and scenic coastal Karnataka!
